@@ -13,6 +13,8 @@ http://screencast.com/t/g4Yglsrauy
 ## Use as bookmarklet
 
 1. Save `javascript:(function(){var%20s=document.createElement('script');s.setAttribute('src','https://github.com/usualoma/mt-plugin-LivePreviewTemplate/raw/master/mt-static/plugins/LivePreviewTemplate/LivePreviewTemplate.js?ts='+new Date().getTime());document.getElementsByTagName('body')[0].appendChild(s);})();` as a bookmark.
+  * You can also add a bookmark from this page.
+    http://usualoma.github.com/mt-plugin-LivePreviewTemplate/
 2. Open a "Edit Template" screen in MT.
 3. Click a saved bookmark.
 
