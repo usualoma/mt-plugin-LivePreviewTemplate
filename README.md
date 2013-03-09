@@ -5,6 +5,11 @@ This plugin enables the Movable Type to convert a template file that saved in de
 ![Screenshot](https://github.com/usualoma/mt-plugin-LivePreviewTemplate/raw/master/artwork/screenshot.png)
 
 
+## Demo Movie
+
+http://screencast.com/t/g4Yglsrauy
+
+
 ## Use as bookmarklet
 
 1. Save `javascript:(function(){var%20s=document.createElement('script');s.setAttribute('src','https://github.com/usualoma/mt-plugin-LivePreviewTemplate/raw/master/mt-static/plugins/LivePreviewTemplate/LivePreviewTemplate.js?ts='+new Date().getTime());document.getElementsByTagName('body')[0].appendChild(s);})();` as a bookmark.
