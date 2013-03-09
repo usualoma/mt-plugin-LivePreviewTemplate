@@ -5,6 +5,11 @@ This plugin enables the Movable Type to convert a template file that saved in de
 ![Screenshot](https://github.com/usualoma/mt-plugin-LivePreviewTemplate/raw/master/artwork/screenshot.png)
 
 
+## Features
+* Import a local template file from desktop to the MT by drag and drop.
+* Rebuild automatically after saving file.
+
+
 ## Demo Movie
 
 http://screencast.com/t/g4Yglsrauy
