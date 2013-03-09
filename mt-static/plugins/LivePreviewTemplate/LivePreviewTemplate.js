@@ -63,6 +63,28 @@
         var f = window['LivePreviewTemplate']['file'];
         var modified = f.lastModifiedDate.getTime();
         if (modified != window['LivePreviewTemplate']['modified']) {
+            
+            $drop.empty();
+            $('<div />').css('font-size', '150%')
+                .text(f.name)
+                .appendTo($drop);
+            if (f.size > 1024*1024) {
+                $('<div />')
+                    .css({
+                        color: 'red'
+                    })
+                    .text('Too large file: ' + Math.round(f.size / (1024*1024)))
+                    .appendTo($drop);
+            }
+            else {
+                $('<div />')
+                    .css({
+                        color: '#444'
+                    })
+                    .text(f.lastModifiedDate.toLocaleString())
+                    .appendTo($drop);
+            }
+            
             if (preview_window && preview_window.document) {
                 (function() {
                     var $body = $('body', preview_window.document);
@@ -89,18 +111,6 @@
                 update_preview_window();
             };
             reader.readAsText(f);
-            
-            $drop.empty();
-            $('<div />').css('font-size', '150%')
-                .text(f.name)
-                .appendTo($drop);
-            $('<div />')
-                .css({
-                    color: '#444',
-                    'margin-left': '10px'
-                })
-                .text(f.lastModifiedDate.toLocaleString())
-                .appendTo($drop);
         }
         window['LivePreviewTemplate']['modified'] = modified;
     }, 500);
