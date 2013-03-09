@@ -2,8 +2,10 @@
     $.event.props.push('dataTransfer');
     
     
-    var $form = $('#title').closest('form');
-    var $mode = $form.find('[name="__mode"]');
+    var $form    = $('#title').closest('form');
+    var $mode    = $form.find('[name="__mode"]');
+    var $outfile = $('#outfile');
+    
     var preview_window = null;
     
     
@@ -83,6 +85,10 @@
                     })
                     .text(f.lastModifiedDate.toLocaleString())
                     .appendTo($drop);
+            }
+
+            if ($outfile.val() == '') {
+                $outfile.val(f.name);
             }
             
             if (preview_window && preview_window.document) {
