@@ -8,6 +8,9 @@
     
     var preview_window = null;
     
+    var check_by_content = window.navigator.userAgent.toLowerCase().indexOf('gecko') != -1;
+    var last_content = '';
+        
     
     if (
         window['LivePreviewTemplate'] &&
@@ -36,17 +39,49 @@
                 else {
                     var url = StaticURI + 'html/blank.html';
                 }
-                preview_window =
-                    window.open(url, 'LivePreviewTemplateWindow', [
+                function window_open() {
+                    return window.open(url, 'LivePreviewTemplateWindow', [
                         'width=' + $(window).outerWidth(),
                         'height=' + $(window).outerHeight()
                     ].join(','));
-                preview_window.focus();
+                }
             
-                if (! preview_url && preview_window.document) {
-                    preview_window.document.open();
-                    preview_window.document.write(data);
-                    preview_window.document.close();
+                if (preview_window && ! preview_window.closed) {
+                    preview_window.location.href = url;
+                }
+                else {
+                    preview_window = window_open();
+                }
+
+                if (preview_window && ! preview_window.closed) {
+                    preview_window.focus();
+
+                    try {
+                        if (! preview_url && preview_window.document) {
+                            preview_window.document.open();
+                            preview_window.document.write(data);
+                            preview_window.document.close();
+                        }
+                    }
+                    catch (e) {
+                        alert($(data).find('#generic-error p').html());
+                        preview_window.close();
+                    }
+                }
+                else if (! preview_url) {
+                    alert($(data).find('#generic-error p').html());
+                }
+                else {
+                    $('<div />')
+                        .append($('<a href="#" />')
+                                    .css('font-size', '200%')
+                                    .click(function() {
+                                        preview_window = window_open();
+                                        $(this).remove();
+                                        return false;
+                                    })
+                                    .text('A pop-up window was not able to be opened. Please click to open a window.'))
+                        .appendTo($drop);
                 }
             });
 
@@ -63,63 +98,97 @@
             return;
         }
         var f = window['LivePreviewTemplate']['file'];
-        var modified = f.lastModifiedDate.getTime();
-        if (modified != window['LivePreviewTemplate']['modified']) {
+        
+        if (f.size > 1024*1024) {
+            $drop.empty();
+            $('<div />')
+                .css({
+                    color: 'red'
+                })
+                .text('Too large file: ' + Math.round(f.size / (1024*1024)))
+                .appendTo($drop);
+            return;
+        }
+            
+        function update(modified, content) {
+            var modified_time = modified.getTime();
+            if (modified_time == window['LivePreviewTemplate']['modified']) {
+                return;
+            }
+            window['LivePreviewTemplate']['modified'] = modified_time;
             
             $drop.empty();
             $('<div />').css('font-size', '150%')
                 .text(f.name)
                 .appendTo($drop);
-            if (f.size > 1024*1024) {
-                $('<div />')
-                    .css({
-                        color: 'red'
-                    })
-                    .text('Too large file: ' + Math.round(f.size / (1024*1024)))
-                    .appendTo($drop);
-            }
-            else {
-                $('<div />')
-                    .css({
-                        color: '#444'
-                    })
-                    .text(f.lastModifiedDate.toLocaleString())
-                    .appendTo($drop);
-            }
+            $('<div />')
+                .css({
+                    color: '#444'
+                })
+                .text(modified.toLocaleString())
+                .appendTo($drop);
 
             if ($outfile.val() == '') {
                 $outfile.val(f.name);
             }
             
-            if (preview_window && preview_window.document) {
-                (function() {
-                    var $body = $('body', preview_window.document);
-                    $('<div />')
-                        .css({
-                            width: '100%',
-                            height: $(preview_window.document).outerHeight() + 'px',
-                            position: 'absolute',
-                            opacity: '0.9',
-                            top: '0px',
-                            left: '0px',
-                            background: 'white',
-                            'z-index': 1000
-                        }).prependTo($body);
-                })();
+            try {
+                if (preview_window && preview_window.document) {
+                    (function() {
+                        var $body = $('body', preview_window.document);
+                        $('<div />')
+                            .css({
+                                width: '100%',
+                                height: $(preview_window.document).outerHeight() + 'px',
+                                position: 'absolute',
+                                opacity: '0.9',
+                                top: '0px',
+                                left: '0px',
+                                background: 'white',
+                                'z-index': 1000
+                            }).prependTo($body);
+                    })();
+                }
+            }
+            catch (e) {
+                // Ignore
             }
             
-            var reader = new FileReader();
-            reader.onload = function() {
-                var text = reader.result;
-                window['editor'].setValue(text);
-                $('#text').val(text);
+            if (content) {
+                window['editor'].setValue(content);
+                $('#text').val(content);
                 
                 update_preview_window();
-            };
-            reader.readAsText(f);
+            }
+            else {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var text = reader.result;
+                    window['editor'].setValue(text);
+                    $('#text').val(text);
+                    
+                    update_preview_window();
+                };
+                reader.readAsText(f);
+            }
         }
-        window['LivePreviewTemplate']['modified'] = modified;
-    }, 500);
+        
+        if (check_by_content) {
+            (function() {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    if (reader.result != last_content) {
+                        last_content = reader.result;
+                        update(new Date(), last_content);
+                    }
+                };
+                reader.readAsText(f);
+            })();
+        }
+        else {
+            update(f.lastModifiedDate);
+        }
+    }, check_by_content ? 1000 : 500);
     
     
     var droparea_id = 'LivePreviewTemplateDrop';
