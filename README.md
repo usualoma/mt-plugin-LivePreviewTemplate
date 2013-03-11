@@ -30,6 +30,9 @@ http://screencast.com/t/g4Yglsrauy
 * Firefox
 * Safari
 
+## Thanks
+* Inspired by [Markdown Previewer](https://github.com/komiya-atsushi/markdown-previewer)
+
 ## LICENSE
 
 Copyright (c) 2013 ToI Inc.
