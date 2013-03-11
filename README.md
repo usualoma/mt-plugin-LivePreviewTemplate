@@ -26,6 +26,7 @@ http://screencast.com/t/g4Yglsrauy
 * MT5.2
 
 ## Supported browsers
+You may need to permit opening a pop-up window.
 * Google Chrome
 * Firefox
 * Safari
